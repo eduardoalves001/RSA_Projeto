@@ -37,7 +37,7 @@
   const icons = {
     car: L.icon({ iconUrl: '/static/icons/car.png', iconSize: [30, 30] }),
     ambulance: L.icon({ iconUrl: '/static/icons/ambulance.png', iconSize: [30, 30] }),
-    crashed: L.icon({ iconUrl: '/static/icons/crash.png', iconSize: [30, 30] })
+    crashed: L.icon({ iconUrl: '/static/icons/crashed.png', iconSize: [30, 30] })
   };
 
   // Marcadores dos veículos no mapa
@@ -50,7 +50,8 @@
   const vehiclesOnRoute = [
     { id: 1, routeIndex: -1, iconType: 'car' },      // começa em -1 para avançar para 0 no update
     { id: 2, routeIndex: 9, iconType: 'car' },       // começa um pouco adiantado
-    { id: 3, routeIndex: 19, iconType: 'ambulance' } // começa adiantado na rota
+    { id: 3, routeIndex: 19, iconType: 'ambulance' }, // começa adiantado na rota
+    { id: 4, routeIndex: 180, iconType: 'crashed' }
   ];
 
   // Função recursiva para extrair todos os LatLngs das layers tipo Polyline
@@ -69,27 +70,29 @@
 
   // Função que atualiza a posição dos veículos ao longo da rota
   function updateVehiclesOnRoute() {
-    if (gpxPoints.length === 0) {
-      console.log("Rota ainda não carregada, esperando...");
-      return; // Sai se a rota ainda não carregou
+  if (gpxPoints.length === 0) {
+    console.log("Rota ainda não carregada, esperando...");
+    return;
+  }
+
+  vehiclesOnRoute.forEach(vehicle => {
+    if (vehicle.iconType !== 'crashed') {
+      // Só incrementa para veículos que não estão crashed
+      vehicle.routeIndex = (vehicle.routeIndex + 1) % gpxPoints.length;
     }
 
-    vehiclesOnRoute.forEach(vehicle => {
-      // Avança o índice na rota (loopando)
-      vehicle.routeIndex = (vehicle.routeIndex + 1) % gpxPoints.length;
+    const latlng = gpxPoints[vehicle.routeIndex];
+    console.log(`Veículo ${vehicle.id} posição:`, latlng);
 
-      const latlng = gpxPoints[vehicle.routeIndex];
-      console.log(`Veículo ${vehicle.id} posição:`, latlng);
-
-      if (vehicleMarkers[vehicle.id]) {
-        vehicleMarkers[vehicle.id].setLatLng(latlng);
-      } else {
-        vehicleMarkers[vehicle.id] = L.marker(latlng, {
-          icon: icons[vehicle.iconType]
-        }).addTo(map);
-      }
-    });
-  }
+    if (vehicleMarkers[vehicle.id]) {
+      vehicleMarkers[vehicle.id].setLatLng(latlng);
+    } else {
+      vehicleMarkers[vehicle.id] = L.marker(latlng, {
+        icon: icons[vehicle.iconType]
+      }).addTo(map);
+    }
+  });
+}
 
   // Carrega a rota GPX e, após carregar, começa o update dos veículos
   new L.GPX("/static/routes/rota_glicinias_deti.gpx", {
