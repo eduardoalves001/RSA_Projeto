@@ -17,14 +17,15 @@ def get_fixed_position_from_gpx(gpx_path):
     with open(gpx_path, 'r') as gpx_file:
         gpx = gpxpy.parse(gpx_file)
 
-        # Try last point in track segments
+        # Tentar obter um ponto intermediário no segmento
         for track in gpx.tracks:
             for segment in track.segments:
                 if segment.points:
-                    last_point = segment.points[-1]
-                    return (last_point.latitude, last_point.longitude)
+                    midpoint_index = len(segment.points) // 2  # Índice do ponto intermediário
+                    midpoint = segment.points[midpoint_index]
+                    return (midpoint.latitude, midpoint.longitude)
 
-        # Fallback: last waypoint
+        # Fallback: último waypoint
         if gpx.waypoints:
             point = gpx.waypoints[-1]
             return (point.latitude, point.longitude)

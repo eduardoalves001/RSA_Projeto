@@ -1,9 +1,9 @@
+import time
 import json
 import paho.mqtt.client as mqtt
 import threading
 from time import sleep
 import gpxpy
-from geopy.distance import geodesic
 import os
 
 # ========== CONFIGURAÇÕES ==========
@@ -112,7 +112,7 @@ def follow_route_and_send_cams(client):
         sleep(SLEEP_INTERVAL)
 
 # ---------- Setup MQTT ----------
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
 client.on_message = on_message
 client.connect(MQTT_BROKER, MQTT_PORT, 60)

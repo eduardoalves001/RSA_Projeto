@@ -57,6 +57,12 @@
   const vehicleMarkers = {};
   const accidentMarkers = {}; // novo dicionário para acidentes
 
+  // Add static accident marker
+  const accidentLatLng = [40.62559, -8.64689];
+  L.marker(accidentLatLng, { icon: icons.accident })
+    .addTo(map)
+    .bindPopup("OBU1");
+
   function updateVehicles() {
     fetch('/vehicles')
     .then(res => res.json())
@@ -69,25 +75,27 @@
         const latlng = [pos.lat, pos.lng];
 
         // Determine the icon for the vehicle
-        let icon = icons.car;
+        let icon = icons.car; // Default icon
         if (vehicle.accident) {
           icon = icons.accident; // Use accident icon
         } else if (vehicle_id.toLowerCase().includes("ambulance") || vehicle_id === "OBU2") {
-          icon = icons.ambulance;
+          icon = icons.ambulance; // Use ambulance icon
         }
 
         // Update the marker if it exists, otherwise create it
         if (vehicleMarkers[vehicle_id]) {
+          // Update the marker's position and icon
           vehicleMarkers[vehicle_id].setLatLng(latlng);
           vehicleMarkers[vehicle_id].setIcon(icon);
         } else {
+          // Create a new marker if it doesn't exist
           vehicleMarkers[vehicle_id] = L.marker(latlng, { icon: icon })
             .addTo(map)
             .bindPopup(`${vehicle_id}`);
         }
       });
     });
-}
+  }
   setInterval(updateVehicles, 1000);
 </script>
 
