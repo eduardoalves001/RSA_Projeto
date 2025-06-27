@@ -57,8 +57,8 @@
   const vehicleMarkers = {};
   const accidentMarkers = {}; // novo dicionário para acidentes
 
-function updateVehicles() {
-  fetch('/vehicles')
+  function updateVehicles() {
+    fetch('/vehicles')
     .then(res => res.json())
     .then(data => {
       Object.keys(data).forEach(vehicle_id => {
@@ -68,13 +68,15 @@ function updateVehicles() {
 
         const latlng = [pos.lat, pos.lng];
 
-        // Ícone do veículo
+        // Determine the icon for the vehicle
         let icon = icons.car;
-        if (vehicle_id.toLowerCase().includes("ambulance")) {
+        if (vehicle.accident) {
+          icon = icons.accident; // Use accident icon
+        } else if (vehicle_id.toLowerCase().includes("ambulance") || vehicle_id === "OBU2") {
           icon = icons.ambulance;
         }
 
-        // Atualiza ou cria o marcador do veículo
+        // Update the marker if it exists, otherwise create it
         if (vehicleMarkers[vehicle_id]) {
           vehicleMarkers[vehicle_id].setLatLng(latlng);
           vehicleMarkers[vehicle_id].setIcon(icon);
@@ -82,15 +84,6 @@ function updateVehicles() {
           vehicleMarkers[vehicle_id] = L.marker(latlng, { icon: icon })
             .addTo(map)
             .bindPopup(`${vehicle_id}`);
-        }
-
-        // Se há acidente e ainda não criámos o marcador de acidente
-        if (vehicle.accident && !accidentMarkers[vehicle_id]) {
-          accidentMarkers[vehicle_id] = L.marker(latlng, {
-            icon: icons.accident
-          })
-            .addTo(map)
-            .bindPopup(`Acidente reportado por ${vehicle_id}`);
         }
       });
     });

@@ -91,12 +91,13 @@ def on_message(client, userdata, msg):
                     "lat": latitude,
                     "lng": longitude
                 }
-                vehicle_states[vehicle_id]["accident"] = True
-                vehicle_states[vehicle_id]["denm_timestamp"] = time.time()
+                vehicle_states[vehicle_id]["accident"] = True  # Mark as accident
+                vehicle_states[vehicle_id]["timestamp"] = time.time()
+                print(f"[MQTT] Accident reported by {vehicle_id} at ({latitude}, {longitude})")
             else:
-                print(f"[WARN] DENM sem coordenadas de {vehicle_id}")
+                print(f"[WARN] DENM without coordinates from {vehicle_id}")
         except KeyError as e:
-            print(f"[ERROR] DENM malformado de {vehicle_id}: {e}")
+            print(f"[ERROR] Malformed DENM from {vehicle_id}: {e}")
 
     print(f"[MQTT] {vehicle_id} - {message_type}: {data}")
 

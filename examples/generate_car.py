@@ -7,8 +7,8 @@ from geopy.distance import geodesic
 import os
 
 # ========== CONFIGURAÇÕES ==========
-NORMAL_GPX_FILE = 'static/routes/rota_wok_glicinias.gpx.'
-DESVIO_GPX_FILE = 'static/routes/rota_glicinias_deti_alternativa.gpx'
+NORMAL_GPX_FILE = 'static/routes/rota_wok_glicinias.gpx'
+DESVIO_GPX_FILE = 'static/routes/rota_wok_glicinias.gpx'
 
 MQTT_BROKER = '192.168.98.30'
 MQTT_PORT = 1883
