@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sistema de notificações de acidentes rodoviários</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS e JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet GPX Plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+
+  <style>
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align:center">Sistema de notificações de acidentes rodoviários - EGS grupo 9</h2>
+<div id="map"></div>
+
+<script>
+  const map = L.map('map').setView([0, 0], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Load GPX route
+  const gpx = '/static/routes/rota_wok_glicinias.gpx';
+  new L.GPX(gpx, {
+    async: true,
+    marker_options: {
+      startIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      endIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+    }
+  })
+  .on('loaded', function(e) {
+    map.fitBounds(e.target.getBounds());
+  })
+  .addTo(map);
+
+  // Custom icons
+  const icons = {
+    car: L.icon({ iconUrl: 'static/icons/car.png', iconSize: [50, 50] }),
+    ambulance: L.icon({ iconUrl: 'static/icons/ambulance.png', iconSize: [50, 50] }),
+    accident: L.icon({ iconUrl: 'static/icons/accident.png', iconSize: [50, 50] })
+  };
+
+  const vehicleMarkers = {};
+  const accidentMarkers = {}; // novo dicionário para acidentes
+
+function updateVehicles() {
+  fetch('/vehicles')
+    .then(res => res.json())
+    .then(data => {
+      Object.keys(data).forEach(vehicle_id => {
+        const vehicle = data[vehicle_id];
+        const pos = vehicle.position;
+        if (!pos) return;
+
+        const latlng = [pos.lat, pos.lng];
+
+        // Ícone do veículo
+        let icon = icons.car;
+        if (vehicle_id.toLowerCase().includes("ambulance")) {
+          icon = icons.ambulance;
+        }
+
+        // Atualiza ou cria o marcador do veículo
+        if (vehicleMarkers[vehicle_id]) {
+          vehicleMarkers[vehicle_id].setLatLng(latlng);
+          vehicleMarkers[vehicle_id].setIcon(icon);
+        } else {
+          vehicleMarkers[vehicle_id] = L.marker(latlng, { icon: icon })
+            .addTo(map)
+            .bindPopup(`${vehicle_id}`);
+        }
+
+        // Se há acidente e ainda não criámos o marcador de acidente
+        if (vehicle.accident && !accidentMarkers[vehicle_id]) {
+          accidentMarkers[vehicle_id] = L.marker(latlng, {
+            icon: icons.accident
+          })
+            .addTo(map)
+            .bindPopup(`Acidente reportado por ${vehicle_id}`);
+        }
+      });
+    });
+}
+  setInterval(updateVehicles, 1000);
+</script>
+
+</body>
+</html>
