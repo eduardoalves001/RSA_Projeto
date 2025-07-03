@@ -5,7 +5,7 @@ from time import sleep
 import gpxpy
 
 # ========== CONFIGURATION ==========
-GPX_FILE = 'static/routes/rota_wok_glicinias.gpx'
+GPX_FILE = 'static/routes/rota.gpx'
 DENM_TEMPLATE_FILE = 'in_denm.json'
 MQTT_BROKER = '192.168.98.10' # O carro que teve o acidente fica com a OBU 1
 MQTT_PORT = 1883
@@ -51,11 +51,11 @@ def send_denm():
         with open(DENM_TEMPLATE_FILE, 'r') as f:
             denm = json.load(f)
 
-        # Update DENM with accident position
+        # Dar update àa DENM com a posição do acidente
         denm["latitude"] = accident_position[0]
         denm["longitude"] = accident_position[1]
 
-        # Send DENM repeatedly
+        # Enviar a DENM repetidamente
         while True:
             payload = json.dumps(denm)
             client.publish(DENM_TOPIC_IN, payload)

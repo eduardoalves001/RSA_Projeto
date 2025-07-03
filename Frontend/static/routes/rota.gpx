@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" creator="mapstogpx.com" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">
+  <metadata>
+    <link href="http://www.mapstogpx.com">
+      <text>Sverrir Sigmundarson</text>
+    </link>
+    <!--desc>Powered by Google, ©2025 Google</desc-->
+    <!--copyright author="Google Inc">
+    	<year>2025</year>
+    	<license>https://developers.google.com/maps/terms</license>
+    </copyright-->
+    <!--url>https://www.google.co.uk/maps/dir/''/Multibanco, 3810-489 Aradas/@40.6262407,-8.650187,17.67z/data=!4m14!4m13!1m5!1m1!1s0xd23a2a59cfc72cd:0xe8cfc1f90281b0f6!2m2!1d-8.648226!2d40.627237!1m5!1m1!1s0xd23a2af0a97bb25:0x49910fb6c7c2a515!2m2!1d-8.6510339!2d40.6268443!3e0?entry=ttu&g_ep=EgoyMDI1MDYzMC4wIKXMDSoASAFQAw==&hl=en</url-->
+    <time>2025-07-03T02:04:11Z</time>
+  </metadata>
+  <wpt lat="40.627237" lon="-8.648226">
+    <name>3810-106</name>
+    <desc>R. de Ovar - Urbanização Santiago, 3810-106, Portugal</desc>
+  </wpt>
+  <wpt lat="40.6268443" lon="-8.6510339">
+    <name>Multibanco</name>
+    <desc>Multibanco, 3810-489 Aradas, Portugal</desc>
+  </wpt>
+<trk>
+  <name>3810-106 to Multibanco</name>
+  <number>1</number>
+  <trkseg>
+  <trkpt lat="40.6271755" lon="-8.6482515">
+    <name>TP001</name>
+  </trkpt>
+  <trkpt lat="40.62717" lon="-8.64829">
+    <name>TP002</name>
+  </trkpt>
+  <trkpt lat="40.62717" lon="-8.64841">
+    <name>TP003</name>
+  </trkpt>
+  <trkpt lat="40.62713" lon="-8.64877">
+    <name>TP004</name>
+  </trkpt>
+  <trkpt lat="40.6271" lon="-8.64914">
+    <name>TP005</name>
+  </trkpt>
+  <trkpt lat="40.6271" lon="-8.64921">
+    <name>TP006</name>
+  </trkpt>
+  <trkpt lat="40.62707" lon="-8.64952">
+    <name>TP007</name>
+  </trkpt>
+  <trkpt lat="40.62706" lon="-8.64966">
+    <name>TP008</name>
+  </trkpt>
+  <trkpt lat="40.62703" lon="-8.65003">
+    <name>TP009</name>
+  </trkpt>
+  <trkpt lat="40.62699" lon="-8.65046">
+    <name>TP010</name>
+  </trkpt>
+  <trkpt lat="40.62697" lon="-8.65065">
+    <name>TP011</name>
+  </trkpt>
+  <trkpt lat="40.62696" lon="-8.65081">
+    <name>TP012</name>
+  </trkpt>
+  <trkpt lat="40.62694" lon="-8.65105">
+    <name>TP013</name>
+  </trkpt>
+  <trkpt lat="40.6269374" lon="-8.6510477">
+    <name>TP014</name>
+  </trkpt>
+  <trkpt lat="40.6269374" lon="-8.6510477">
+    <name>TP015</name>
+  </trkpt>
+  <trkpt lat="40.6269374" lon="-8.6510477">
+    <name>TP016</name>
+  </trkpt>
+  </trkseg>
+</trk>
+</gpx>

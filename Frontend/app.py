@@ -16,12 +16,18 @@ def index():
 @app.route("/vehicles")
 def get_vehicles():
     now = time.time()
-    # Filtra veículos que enviaram dados recentemente (últimos 10s)
     return jsonify({
         vid: state
         for vid, state in vehicle_states.items()
         if now - state.get("timestamp", 0) < 10
     })
+
+# Função utilitária para converter coordenadas se vierem em micrograus
+def convert_coord(value):
+    # Se estiver fora de intervalo típico de graus (-90 a 90 ou -180 a 180), converte
+    if abs(value) > 180:
+        return value / 1e7
+    return value
 
 # Callback ao receber mensagens MQTT
 def on_message(client, userdata, msg):
@@ -34,13 +40,15 @@ def on_message(client, userdata, msg):
         print(f"[ERROR] JSON inválido de {topic}: {payload}")
         return
 
-    # Processar mensagens do tópico frontend/obu_position
     if topic == "frontend/obu_position":
         vehicle_id = data.get("obu_id")
         latitude = data.get("latitude")
         longitude = data.get("longitude")
 
-        if vehicle_id and latitude and longitude:
+        if vehicle_id and latitude is not None and longitude is not None:
+            latitude = convert_coord(latitude)
+            longitude = convert_coord(longitude)
+
             if vehicle_id not in vehicle_states:
                 vehicle_states[vehicle_id] = {}
 
@@ -49,36 +57,38 @@ def on_message(client, userdata, msg):
                 "lng": longitude
             }
             vehicle_states[vehicle_id]["timestamp"] = time.time()
-            print(f"[MQTT] {vehicle_id} - posição atualizada: {data}")
+            print(f"[MQTT] {vehicle_id} - posição atualizada: {latitude}, {longitude}")
         else:
             print(f"[WARN] Mensagem de posição inválida: {data}")
         return
 
-    # Processar mensagens dos tópicos vanetza/in/cam e vanetza/out/cam
+    # Processar mensagens dos tópicos vanetza/in/cam e vanetza/in/denm
     parts = topic.split('/')
     if len(parts) < 3:
         return
 
-    if "obu" in parts[1]:
-        vehicle_id = parts[1]
-        message_type = parts[2]
-    else:
-        vehicle_id = "obu1"
-        message_type = "denm"
+    vehicle_id = parts[1] if "obu" in parts[1] else "obu1"
+    message_type = parts[2]
 
     if vehicle_id not in vehicle_states:
         vehicle_states[vehicle_id] = {}
 
     if message_type == "cam":
-        if "latitude" in data and "longitude" in data:
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        if latitude is not None and longitude is not None:
+            latitude = convert_coord(latitude)
+            longitude = convert_coord(longitude)
+
             vehicle_states[vehicle_id]["position"] = {
-                "lat": data["latitude"],
-                "lng": data["longitude"]
+                "lat": latitude,
+                "lng": longitude
             }
             vehicle_states[vehicle_id]["speed"] = data.get("speed", 0)
             vehicle_states[vehicle_id]["timestamp"] = time.time()
+            print(f"[MQTT][CAM] {vehicle_id} posição: {latitude}, {longitude}")
         else:
-            print(f"[WARN] CAM sem coordenadas de {vehicle_id}")
+            print(f"[WARN] CAM sem coordenadas de {vehicle_id}: {data}")
 
     elif message_type == "denm":
         try:
@@ -87,32 +97,32 @@ def on_message(client, userdata, msg):
             longitude = event_position.get("longitude")
 
             if latitude is not None and longitude is not None:
-                vehicle_states[vehicle_id]["position"] = {
+                latitude = convert_coord(latitude)
+                longitude = convert_coord(longitude)
+
+                vehicle_states[vehicle_id]["accident_position"] = {
                     "lat": latitude,
                     "lng": longitude
                 }
-                vehicle_states[vehicle_id]["accident"] = True  # Mark as accident
+                vehicle_states[vehicle_id]["accident"] = True
                 vehicle_states[vehicle_id]["timestamp"] = time.time()
-                print(f"[MQTT] Accident reported by {vehicle_id} at ({latitude}, {longitude})")
+                print(f"[MQTT][DENM] Acidente reportado por {vehicle_id} em ({latitude}, {longitude})")
             else:
-                print(f"[WARN] DENM without coordinates from {vehicle_id}")
+                print(f"[WARN] DENM sem coordenadas de {vehicle_id}")
         except KeyError as e:
-            print(f"[ERROR] Malformed DENM from {vehicle_id}: {e}")
+            print(f"[ERROR] DENM malformado de {vehicle_id}: {e}")
 
-    print(f"[MQTT] {vehicle_id} - {message_type}: {data}")
-
-# Thread para escutar o broker MQTT
+# Thread para escutar MQTT
 def mqtt_thread():
     client = mqtt.Client()
     client.on_message = on_message
     client.connect("192.168.98.40", 1883, 60)
 
-    # Subscreve aos tópicos que queres ouvir
     client.subscribe("vanetza/in/cam")
     client.subscribe("vanetza/out/cam")
     client.subscribe("vanetza/in/denm")
     client.subscribe("vanetza/out/denm")
-    client.subscribe("frontend/obu_position")  # Adicionado para receber posições dos OBUs
+    client.subscribe("frontend/obu_position")
 
     client.loop_forever()
 

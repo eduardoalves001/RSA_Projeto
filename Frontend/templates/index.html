@@ -32,20 +32,43 @@
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  // Load GPX route
-  const gpx = '/static/routes/rota_wok_glicinias.gpx';
-  new L.GPX(gpx, {
-    async: true,
-    marker_options: {
-      startIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      endIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
-    }
-  })
-  .on('loaded', function(e) {
-    map.fitBounds(e.target.getBounds());
-  })
-  .addTo(map);
+// Load GPX route (default blue)
+const gpx = '/static/routes/rota.gpx';
+new L.GPX(gpx, {
+  async: true,
+  marker_options: {
+    startIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    endIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+  }
+})
+.on('loaded', function(e) {
+  map.fitBounds(e.target.getBounds());
+})
+.addTo(map);
+
+// Load secondary GPX route (red polyline)
+const secondaryGpx = '/static/routes/rota_alternativa.gpx';
+new L.GPX(secondaryGpx, {
+  async: true,
+  polyline_options: {
+    color: 'red',
+    weight: 4,
+    opacity: 0.75,
+    dashArray: '5, 5'
+  },
+  marker_options: {
+    startIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    endIconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+  }
+})
+.on('loaded', function(e) {
+  map.fitBounds(e.target.getBounds());
+})
+.addTo(map);
+
+
 
   // Custom icons
   const icons = {
@@ -58,7 +81,7 @@
   const accidentMarkers = {}; // novo dicionário para acidentes
 
   // Add static accident marker
-  const accidentLatLng = [40.62559, -8.64689];
+  const accidentLatLng = [40.62706, -8.64966];
   L.marker(accidentLatLng, { icon: icons.accident })
     .addTo(map)
     .bindPopup("OBU1");
@@ -75,11 +98,11 @@
         const latlng = [pos.lat, pos.lng];
 
         // Determine the icon for the vehicle
-        let icon = icons.car; // Default icon
+        let icon = icons.ambulance; // Default icon
         if (vehicle.accident) {
           icon = icons.accident; // Use accident icon
-        } else if (vehicle_id.toLowerCase().includes("ambulance") || vehicle_id === "OBU2") {
-          icon = icons.ambulance; // Use ambulance icon
+        } else if (vehicle_id.toLowerCase().includes("ambulance") || vehicle_id.toLowerCase() === "obu2") {
+          icon = icons.car; // Use ambulance icon
         }
 
         // Update the marker if it exists, otherwise create it
