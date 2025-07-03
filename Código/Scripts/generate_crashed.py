@@ -4,14 +4,12 @@ import threading
 from time import sleep
 import gpxpy
 
-# ========== CONFIGURATION ==========
 GPX_FILE = 'static/routes/rota.gpx'
 DENM_TEMPLATE_FILE = 'in_denm.json'
 MQTT_BROKER = '192.168.98.10' # O carro que teve o acidente fica com a OBU 1
 MQTT_PORT = 1883
 DENM_TOPIC_IN = 'vanetza/in/denm'
 SLEEP_INTERVAL = 3  # seconds between repeated DENM messages
-# ===================================
 
 def get_fixed_position_from_gpx(gpx_path):
     with open(gpx_path, 'r') as gpx_file:
@@ -36,7 +34,6 @@ def get_fixed_position_from_gpx(gpx_path):
 accident_position = get_fixed_position_from_gpx(GPX_FILE)
 print(f"[INIT] Accident fixed at: {accident_position}")
 
-# ---------- MQTT Setup ----------
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
 def on_connect(client, userdata, flags, rc, properties):
@@ -45,7 +42,6 @@ def on_connect(client, userdata, flags, rc, properties):
 client.on_connect = on_connect
 client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
-# ---------- DENM Sender ----------
 def send_denm():
     try:
         with open(DENM_TEMPLATE_FILE, 'r') as f:
@@ -64,7 +60,6 @@ def send_denm():
     except Exception as e:
         print(f"[ERROR] Failed to send DENM: {e}")
 
-# ---------- Start MQTT + Sender ----------
 threading.Thread(target=client.loop_forever, daemon=True).start()
 sleep(2)
 send_denm()

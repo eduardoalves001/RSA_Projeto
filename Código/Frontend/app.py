@@ -29,7 +29,6 @@ def convert_coord(value):
         return value / 1e7
     return value
 
-# Callback ao receber mensagens MQTT
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode()

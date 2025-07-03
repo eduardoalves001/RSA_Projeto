@@ -4,12 +4,8 @@
   <meta charset="utf-8" />
   <title>Sistema de notificações de acidentes rodoviários</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Leaflet CSS e JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Leaflet GPX Plugin -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
 
   <style>
@@ -32,7 +28,6 @@
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
-// Load GPX route (default blue)
 const gpx = '/static/routes/rota.gpx';
 new L.GPX(gpx, {
   async: true,
@@ -47,7 +42,6 @@ new L.GPX(gpx, {
 })
 .addTo(map);
 
-// Load secondary GPX route (red polyline)
 const secondaryGpx = '/static/routes/rota_alternativa.gpx';
 new L.GPX(secondaryGpx, {
   async: true,
@@ -78,9 +72,8 @@ new L.GPX(secondaryGpx, {
   };
 
   const vehicleMarkers = {};
-  const accidentMarkers = {}; // novo dicionário para acidentes
+  const accidentMarkers = {};
 
-  // Add static accident marker
   const accidentLatLng = [40.62706, -8.64966];
   L.marker(accidentLatLng, { icon: icons.accident })
     .addTo(map)
@@ -97,21 +90,17 @@ new L.GPX(secondaryGpx, {
 
         const latlng = [pos.lat, pos.lng];
 
-        // Determine the icon for the vehicle
-        let icon = icons.ambulance; // Default icon
+        let icon = icons.ambulance;
         if (vehicle.accident) {
-          icon = icons.accident; // Use accident icon
+          icon = icons.accident;
         } else if (vehicle_id.toLowerCase().includes("ambulance") || vehicle_id.toLowerCase() === "obu2") {
-          icon = icons.car; // Use ambulance icon
+          icon = icons.car;
         }
 
-        // Update the marker if it exists, otherwise create it
         if (vehicleMarkers[vehicle_id]) {
-          // Update the marker's position and icon
           vehicleMarkers[vehicle_id].setLatLng(latlng);
           vehicleMarkers[vehicle_id].setIcon(icon);
         } else {
-          // Create a new marker if it doesn't exist
           vehicleMarkers[vehicle_id] = L.marker(latlng, { icon: icon })
             .addTo(map)
             .bindPopup(`${vehicle_id}`);

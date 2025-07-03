@@ -6,7 +6,6 @@ from time import sleep
 import gpxpy
 import os
 
-# ========== CONFIGURAÇÕES ==========
 NORMAL_GPX_FILE = 'static/routes/rota.gpx'
 DESVIO_GPX_FILE = 'static/routes/rota_alternativa.gpx'
 
@@ -17,9 +16,9 @@ CAM_TOPIC_IN = 'vanetza/in/cam'
 CAM_TOPIC_OUT = 'vanetza/out/cam'
 
 SLEEP_INTERVAL = 2  # segundos entre envios de CAM
-# ===================================
 
-# ---------- Dados Globais ----------
+
+
 current_trajectory = []
 current_index = 0
 diverted = False
@@ -28,7 +27,6 @@ lock = threading.Lock()
 other_obu_position_lock = threading.Lock()
 other_obu_positions = {}
 
-# ---------- Função para carregar GPX ----------
 def load_gpx_coordinates(gpx_path):
     try:
         with open(gpx_path, 'r') as gpx_file:
@@ -46,7 +44,7 @@ def load_gpx_coordinates(gpx_path):
 current_trajectory = load_gpx_coordinates(NORMAL_GPX_FILE)
 print(f"[INIT] Loaded {len(current_trajectory)} points from NORMAL route")
 
-# ---------- Callbacks MQTT ----------
+
 def on_connect(client, userdata, flags, rc, properties=None):
     print(f"[MQTT] Connected with result code {rc}")
     client.subscribe(DENM_TOPIC_OUT) # Escuta DENMs enviados por outros veículos
@@ -81,7 +79,7 @@ def on_message(client, userdata, msg):
 
     except Exception as e:
         print(f"[ERROR] Failed to process incoming message: {e}")
-# ---------- Movimento do carro e envio de CAMs ----------
+
 def follow_route_and_send_cams(client):
     global current_index, current_trajectory, diverted
 
@@ -122,13 +120,12 @@ def follow_route_and_send_cams(client):
         sleep(SLEEP_INTERVAL)
 
 
-# ---------- Setup MQTT ----------
+
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
 client.on_message = on_message
 client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
-# ---------- Rodar MQTT Loop e movimento ----------
 mqtt_thread = threading.Thread(target=client.loop_forever, daemon=True)
 mqtt_thread.start()
 
